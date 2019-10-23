@@ -48,5 +48,42 @@ class MuseumTest < Minitest::Test
     assert_equal [@imax], @dmns.recommended_exhibits(@sally)
   end
 
+  def test_it_can_accept_patrons
 
+    assert_equal [], @dmns.patrons
+
+    @dmns.admit(@bob)
+    @dmns.admit(@sally)
+
+    assert_equal [@bob, @sally], @dmns.patrons
+  end
+
+  def test_it_can_see_interests_by_patron
+    @dmns.admit(@bob)
+    @bob.add_interest("Dead Sea Scrolls")
+
+    assert_equal [@bob], @dmns.interests_by_patron("Dead Sea Scrolls")
+  end
+
+
+  def test_it_can_return_patrons_by_exhibit_interest
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@imax)
+
+    @dmns.admit(@bob)
+    @dmns.admit(@sally)
+
+    @bob.add_interest("Dead Sea Scrolls")
+    @bob.add_interest("Gems and Minerals")
+    @sally.add_interest("IMAX")
+
+    expected_hash = {
+                      @dead_sea_scrolls => @bob,
+                      @gems_and_minerals => @bob,
+                      @imax => @sally
+                    }
+
+    assert_equal expected_hash, @dmns.patrons_by_exhibit_interest
+  end
 end
